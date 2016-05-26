@@ -137,7 +137,9 @@ class Scanner extends PublicEmitter {
 				$this->triggerPropagator($storage, $path);
 			});
 
+			$storage->getPropagator()->beginBatch();
 			$scanner->backgroundScan();
+			$storage->getPropagator()->commitBatch();
 		}
 	}
 
@@ -181,7 +183,9 @@ class Scanner extends PublicEmitter {
 				$this->db->beginTransaction();
 			}
 			try {
+				$storage->getPropagator()->beginBatch();
 				$scanner->scan($relativePath, \OC\Files\Cache\Scanner::SCAN_RECURSIVE, \OC\Files\Cache\Scanner::REUSE_ETAG | \OC\Files\Cache\Scanner::REUSE_SIZE);
+				$storage->getPropagator()->commitBatch();
 			} catch (StorageNotAvailableException $e) {
 				$this->logger->error('Storage ' . $storage->getId() . ' not available');
 				$this->logger->logException($e);
